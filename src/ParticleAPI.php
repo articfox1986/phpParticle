@@ -27,7 +27,7 @@ class ParticleAPI {
      *
      * @param string $endpoint A url for the api you want to use (default: "https://api.particle.io/")
      *
-     * @return void
+     * @return boolean
      *
      */
     public function setEndpoint($endpoint)
@@ -50,7 +50,7 @@ class ParticleAPI {
      *
      * @param int $timeout The amount of time, in seconds, for a call to wait for data before returning with a TIMEOUT error
      *
-     * @return void
+     * @return boolean
      *
      */
     public function setTimeout($timeout)
@@ -83,7 +83,7 @@ class ParticleAPI {
      * @param string $email The email to authenticate with
      * @param string $password The password to authenticate with
      *
-     * @return void
+     * @return boolean
      *
      */
     public function setAuth($email, $password)
@@ -114,7 +114,7 @@ class ParticleAPI {
     /**
      * Clears all the authentication info (email and password). Internally set to false. Subsequent calls which require a email/password will fail
      *
-     * @return void
+     * @return boolean
      *
      */
     public function clearAuth()
@@ -128,7 +128,7 @@ class ParticleAPI {
      *
      * @param string $accessToken The access token to authenticate with
      *
-     * @return void
+     * @return boolean
      *
      */
     public function setAccessToken($accessToken)
@@ -149,7 +149,7 @@ class ParticleAPI {
     /**
      * Clears the access token info. Internally set to false. Subsequent calls which require an access token will fail
      *
-     * @return void
+     * @return boolean
      *
      */
     public function clearAccessToken()
@@ -163,7 +163,7 @@ class ParticleAPI {
      *
      * @param string $debugType The debug type (either "HTML" or "TEXT")
      *
-     * @return void
+     * @return boolean
      *
      */
     public function setDebugType($debugType = "HTML")
@@ -194,7 +194,7 @@ class ParticleAPI {
      *
      * @param boolean $debug true turns on internal debugging & false turns off internal debugging
      *
-     * @return void
+     * @return boolean
      *
      */
     public function setDebug($debug = false)
@@ -217,7 +217,7 @@ class ParticleAPI {
      *
      * @param boolean $disableSSL true allows you to communicate with api endpoints with invalid security certificates & false enforces SSL verification
      *
-     * @return void
+     * @return boolean
      *
      */
     public function setDisableSSL($disableSSL = false)
@@ -241,13 +241,14 @@ class ParticleAPI {
      * @param string $errorText The value to set _error to
      * @param string $errorSource The value to set _errorSource to
      *
-     * @return void
+     * @return boolean
      *
      */
     private function _setError($errorText, $errorSource)
     {
         $this->_error = $errorText;
         $this->_errorSource = $errorSource;
+        return true;
     }
     
     /**
@@ -255,21 +256,22 @@ class ParticleAPI {
      *
      * @param string $errorSource The value to set _errorSource to
      *
-     * @return void
+     * @return boolean
      *
      */
     private function _setErrorSource($errorSource)
     {
         $this->_errorSource = $errorSource;
+        return true;
     }
 
     /**
      * Private Function. Outputs the desired debug text formatted if required
      *
      * @param string $debugText The debug string to output
-     * @param string $override If set to true overrides the internal debug on/off state and always outputs the debugText. If set to false it follows the internal debug on/off state
+     * @param boolean $override If set to true overrides the internal debug on/off state and always outputs the debugText. If set to false it follows the internal debug on/off state
      *
-     * @return void
+     * @return boolean
      *
      */
     private function _debug($debugText, $override = false)
@@ -292,15 +294,16 @@ class ParticleAPI {
                 return false;
             }
         }
+        return false;
     }
 
     /**
      * Private Function. Outputs the desired debug array formatted if required
      *
      * @param mixed[] $debugArray The debug array to output
-     * @param string $override If set to true overrides the internal debug on/off state and always outputs the debugArray. If set to false it follows the internal debug on/off state
+     * @param boolean $override If set to true overrides the internal debug on/off state and always outputs the debugArray. If set to false it follows the internal debug on/off state
      *
-     * @return void
+     * @return boolean
      *
      */
     private function _debug_r($debugArray, $override = false)
@@ -317,7 +320,6 @@ class ParticleAPI {
             else if($this->_debugType == "TEXT")
             {
                 print_r($debugArray);
-                $this->debug();
                 return true;
             }
             else
@@ -326,6 +328,7 @@ class ParticleAPI {
                 return false;
             }
         }
+        return false;
     }
 
     /**
@@ -333,7 +336,7 @@ class ParticleAPI {
      *
      * @param string $debugText The debug string to output
      *
-     * @return void
+     * @return string
      *
      */
     public function debug($debugText)
@@ -344,9 +347,9 @@ class ParticleAPI {
     /**
      * Outputs the desired debug array formatted if required
      *
-     * @param string $debugArray The debug array to output
+     * @param mixed $debugArray The debug array to output
      *
-     * @return void
+     * @return string
      *
      */
     public function debug_r($debugArray)
@@ -480,7 +483,7 @@ class ParticleAPI {
     public function uploadFirmware($deviceID,$filename,$filepath,$isBinary=false)
     {
             // Create a CURLFile object
-            $cfile = new CURLFile($filepath,'application/octet-stream',$filename);
+            $cfile = new \CURLFile($filepath,'application/octet-stream',$filename);
 
             $url = $this->_endpoint .'v1/devices/' . $deviceID;
             $params = array('file' => $cfile);
@@ -506,10 +509,10 @@ class ParticleAPI {
     /**
      * Creates a new token on the particle cloud. Requires the email/password auth to be set
      *
-     * @param int $expires_in When the token should expire (in seconds). Set to false to ignore and use the default. Set to 0 for a token that never expires
-     * @param string $expires_at When the token should expire (at a date/time). Set to false to ignore and use the default. Set to 'null' for a token that never expires. Otherwise this should be a ISO8601 style date string
-     * @param string $clientID The clientID. If you don't have one of these (only used in OAuth applications) set to false
-     * @param string $clientSecret The clientSecret. If you don't have one of these (only used in OAuth applications) set to false
+     * @param boolean $expires_in When the token should expire (in seconds). Set to false to ignore and use the default. Set to 0 for a token that never expires
+     * @param boolean $expires_at When the token should expire (at a date/time). Set to false to ignore and use the default. Set to 'null' for a token that never expires. Otherwise this should be a ISO8601 style date string
+     * @param boolean $clientID The clientID. If you don't have one of these (only used in OAuth applications) set to false
+     * @param boolean $clientSecret The clientSecret. If you don't have one of these (only used in OAuth applications) set to false
      *
      * @return boolean true if the call was successful, false otherwise. Use getResult to get the api result and use getError & getErrorSource to determine what happened in the event of an error
      */
@@ -564,12 +567,12 @@ class ParticleAPI {
             
             return $result;
     }
-    
+
     /**
      * Creates a new webhook on the particle cloud. Requires the accessToken to be set
      * @param string $event The event name used to trigger the webhook
      * @param string $webhookUrl The url to query once the event has occured
-     * @param string $extras See http://docs.particle.io/webhooks/#webhook-options
+     * @param array $extras See http://docs.particle.io/webhooks/#webhook-options
      *
      * @return boolean true if the call was successful, false otherwise. Use getResult to get the api result and use getError & getErrorSource to determine what happened in the event of an error
      */
@@ -587,6 +590,7 @@ class ParticleAPI {
     /**
      * Delete webhooks from the particle cloud. Requires the accessToken to be set
      *
+     * @param string $webhookID
      * @return boolean true if the call was successful, false otherwise. Use getResult to get the api result and use getError & getErrorSource to determine what happened in the event of an error
      */
     public function deleteWebhook($webhookID)
@@ -648,10 +652,10 @@ class ParticleAPI {
     /**
      * Private Function. Performs a CURL Request with the given parameters
      *
-     * @param string url The url to call
-     * @param mixed[] params An array of parameters to pass to the url
-     * @param string type The type of request ("GET", "POST", "PUT", etc)
-     * @param string authType The type of authorization to use ('none' uses the access token, 'basic' uses basic auth with the email/password auth details, and 'basic-dummy' uses dummy basic auth details)
+     * @param string $url The url to call
+     * @param mixed[] $params An array of parameters to pass to the url
+     * @param string $type The type of request ("GET", "POST", "PUT", etc)
+     * @param string $authType The type of authorization to use ('none' uses the access token, 'basic' uses basic auth with the email/password auth details, and 'basic-dummy' uses dummy basic auth details)
      *
      * @return boolean true on success, false on failure
      */
@@ -766,7 +770,7 @@ class ParticleAPI {
         // Download the given URL, and return output
         $this->_debug("Executing Curl Operation");
         $this->_debug("Url:");
-        $this->_debug_r($url);
+        $this->_debug_r([$url]);
         $this->_debug("Params:");
         $this->_debug_r($params);
         $output = curl_exec($ch);
@@ -811,7 +815,7 @@ class ParticleAPI {
             else
             {
                 $this->_debug("CURL Request - Unable to parse JSON");
-                $errorText = "Unable to parse JSON. Json error = " . json_last_error() . ". See http://php.net/manual/en/function.json-last-error.php for more information. Raw response from Spark Cloud = '" . $result . "'";
+                $errorText = "Unable to parse JSON. Json error = " . json_last_error() . ". See http://php.net/manual/en/function.json-last-error.php for more information. Raw response from Spark Cloud = '" . $output . "'";
                 $this->_setError($errorText, __FUNCTION__);
                 return false;
             }
@@ -821,7 +825,7 @@ class ParticleAPI {
     /**
      * Private Function. Returns a human readable string for a given CURL Error Code
      *
-     * @param int curlCode The CURL error code
+     * @param int $curlCode The CURL error code
      *
      * @return string A human-readable string version of the curlCode
      */
