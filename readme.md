@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/articfox1986/phpParticle.svg?branch=master)](https://travis-ci.org/articfox1986/phpParticle)
+[![Build Status](https://travis-ci.org/devinpearson/phpParticle.svg?branch=master)](https://travis-ci.org/devinpearson/phpParticle)
 
 phpParticle
 ========
